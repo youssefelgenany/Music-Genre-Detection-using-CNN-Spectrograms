@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gen Scope - Sonic Curator</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Inter:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#670025",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#e3e0f8",
+                        "surface-container-low": "#f7edff",
+                        "secondary-fixed-dim": "#d5d2e9",
+                        "error-container": "#f74b6d",
+                        "surface-tint": "#5d3fd3",
+                        "inverse-surface": "#14052b",
+                        "primary-container": "#a391ff",
+                        "on-secondary": "#f4f1ff",
+                        "tertiary-dim": "#a1003f",
+                        "on-error": "#ffefef",
+                        "primary-dim": "#5130c6",
+                        "outline-variant": "#b7a5d4",
+                        "surface-container-high": "#ecdcff",
+                        "on-primary-container": "#230076",
+                        "primary-fixed-dim": "#9680ff",
+                        "on-primary-fixed-variant": "#2c008f",
+                        "surface-container-highest": "#e7d6ff",
+                        "secondary": "#5b596d",
+                        "primary-fixed": "#a391ff",
+                        "surface-bright": "#fcf4ff",
+                        "tertiary-fixed": "#ff8fa4",
+                        "on-tertiary-fixed": "#390011",
+                        "on-tertiary": "#ffeff0",
+                        "primary": "#5d3fd3",
+                        "on-secondary-container": "#515063",
+                        "error-dim": "#a70138",
+                        "on-background": "#36274e",
+                        "on-surface": "#36274e",
+                        "background": "#fcf4ff",
+                        "tertiary": "#b70049",
+                        "surface-container": "#f0e3ff",
+                        "outline": "#806f9b",
+                        "on-tertiary-fixed-variant": "#77002d",
+                        "surface": "#fcf4ff",
+                        "on-error-container": "#510017",
+                        "on-surface-variant": "#64547e",
+                        "surface-variant": "#e7d6ff",
+                        "tertiary-container": "#ff8fa4",
+                        "on-secondary-fixed": "#3e3d50",
+                        "secondary-dim": "#4f4e61",
+                        "inverse-on-surface": "#a795c3",
+                        "surface-dim": "#e0cbff",
+                        "secondary-fixed": "#e3e0f8",
+                        "on-secondary-fixed-variant": "#5b596d",
+                        "error": "#b41340",
+                        "on-primary-fixed": "#000000",
+                        "inverse-primary": "#937dff",
+                        "tertiary-fixed-dim": "#ff7794",
+                        "on-primary": "#f6f0ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(231, 214, 255, 0.6);
+            backdrop-filter: blur(24px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-50 bg-[#f7edff] dark:bg-slate-900">
+<div class="flex justify-between items-center h-16 px-6 w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black text-[#36274e] dark:text-[#fcf4ff] font-headline tracking-tight">Gen Scope</span>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-[#5d3fd3] font-bold border-b-2 border-[#5d3fd3] hover:bg-[#e7d6ff]/50 transition-colors py-1" href="#">Analyze</a>
+<a class="text-[#36274e]/70 dark:text-[#fcf4ff]/70 hover:bg-[#e7d6ff]/50 transition-colors py-1" href="#">Library</a>
+<a class="text-[#36274e]/70 dark:text-[#fcf4ff]/70 hover:bg-[#e7d6ff]/50 transition-colors py-1" href="#">History</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#5d3fd3] dark:text-[#a391ff] cursor-pointer active:scale-95 duration-200">account_circle</span>
+</div>
+</div>
+</header>
+<main class="flex-grow flex flex-col md:flex-row max-w-7xl mx-auto w-full px-6 py-8 gap-8">
+<!-- Sidebar Navigation (Hidden on Mobile) -->
+<aside class="hidden md:flex h-full w-64 border-r-0 flex-col gap-2 py-2">
+<div class="mb-8 px-4">
+<h2 class="font-headline font-black text-[#5d3fd3]">Gen Scope</h2>
+<p class="text-xs text-on-surface-variant font-medium opacity-70">Sonic Curator</p>
+</div>
+<div class="flex flex-col gap-2">
+<button class="bg-gradient-to-br from-[#5d3fd3] to-[#a391ff] text-white rounded-full mx-2 px-4 py-3 shadow-lg shadow-[#5d3fd3]/20 flex items-center gap-3 transition-all hover:translate-x-1 duration-300">
+<span class="material-symbols-outlined" data-icon="radar">radar</span>
+<span class="font-inter text-sm font-medium">Analyze</span>
+</button>
+<button class="text-[#36274e] dark:text-[#fcf4ff] opacity-80 mx-2 px-4 py-3 rounded-full flex items-center gap-3 hover:bg-[#e7d6ff] dark:hover:bg-slate-800 transition-all hover:translate-x-1 duration-300">
+<span class="material-symbols-outlined" data-icon="library_music">library_music</span>
+<span class="font-inter text-sm font-medium">Library</span>
+</button>
+<button class="text-[#36274e] dark:text-[#fcf4ff] opacity-80 mx-2 px-4 py-3 rounded-full flex items-center gap-3 hover:bg-[#e7d6ff] dark:hover:bg-slate-800 transition-all hover:translate-x-1 duration-300">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-inter text-sm font-medium">History</span>
+</button>
+</div>
+<div class="mt-12 px-2">
+<button class="w-full bg-surface-container-highest text-primary font-bold py-4 rounded-lg hover:bg-surface-variant transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                    New Analysis
+                </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<section class="flex-grow flex flex-col gap-8">
+<!-- Hero Result Section -->
+<div class="relative overflow-hidden bg-surface-container-low rounded-lg p-8 md:p-12 border-none">
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary-container/20 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<span class="text-label-md text-primary font-bold tracking-widest uppercase mb-4 block">Last Detected Genre</span>
+<h1 class="text-6xl md:text-8xl font-headline font-black text-on-surface tracking-tighter leading-none mb-4">NEO-SYNTHWAVE</h1>
+<div class="flex flex-wrap gap-3">
+<span class="px-6 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full text-sm font-bold shadow-md">98% Confidence</span>
+<span class="px-6 py-2 bg-surface-container-highest text-on-surface-variant rounded-full text-sm font-bold">124 BPM</span>
+<span class="px-6 py-2 bg-surface-container-highest text-on-surface-variant rounded-full text-sm font-bold">Key: G# Minor</span>
+</div>
+</div>
+</div>
+<!-- Interaction Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Main Detection Button (Asymmetric Span) -->
+<div class="md:col-span-2 bg-surface-container-lowest rounded-lg p-12 flex flex-col items-center justify-center min-h-[400px] relative overflow-hidden group">
+<!-- Layered pulse rings -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-64 h-64 bg-surface-tint/5 rounded-full absolute animate-ping duration-3000"></div>
+<div class="w-80 h-80 bg-surface-tint/5 rounded-full absolute animate-pulse"></div>
+</div>
+<button class="relative z-20 w-48 h-48 rounded-full bg-gradient-to-br from-primary to-primary-container shadow-[0_20px_50px_rgba(93,63,211,0.3)] flex flex-col items-center justify-center text-white active:scale-95 transition-transform duration-300 group-hover:shadow-[0_25px_60px_rgba(93,63,211,0.4)]">
+<span class="material-symbols-outlined text-6xl mb-2" style="font-variation-settings: 'FILL' 1;">mic</span>
+<span class="font-headline font-extrabold text-lg uppercase tracking-wider">Start</span>
+<span class="font-headline font-extrabold text-lg uppercase tracking-wider">Recording</span>
+</button>
+<p class="mt-8 text-on-surface-variant font-medium text-center max-w-xs">
+                        Tap to analyze the sonic landscape around you in real-time.
+                    </p>
+</div>
+<!-- Upload Section -->
+<div class="bg-surface-container-high rounded-lg p-8 flex flex-col items-center justify-center border-2 border-dashed border-outline-variant/30 hover:border-primary/50 transition-all cursor-pointer">
+<span class="material-symbols-outlined text-4xl text-primary mb-4">cloud_upload</span>
+<h3 class="font-headline font-bold text-lg mb-2">Upload Audio</h3>
+<p class="text-sm text-center text-on-surface-variant mb-6">Drop your .mp3 or .wav files here for deep analysis.</p>
+<button class="px-6 py-2 bg-on-surface text-surface rounded-full text-sm font-bold hover:opacity-90 transition-opacity">Browse Files</button>
+</div>
+</div>
+<!-- Recent Detections / Cards -->
+<div class="mt-4">
+<h3 class="font-headline font-black text-2xl mb-6">Discovery Stream</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg group hover:bg-surface-container-low transition-all">
+<div class="aspect-square w-full rounded-lg mb-4 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Abstract vibrant 3D shapes in shades of purple and pink floating in a dreamlike digital space with soft cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiCjhPpIZ-bQbC7M9gwz3qOfPDZ9dbRpzkDE33UxVnhlCqlAacicJfB_qq50Azv0pM35uTLbbJJL-wc2t6PwCItqJKeClhHYEBiGafXHV6QMW69MXelSaHvdaw-YDxuQclQqCCPNnsVONVCGVX47GzRVMnfIa7r-P0NO8DSlUjKeKEDfTMXqlypPtXi5NFQv79xfKVNmLvpKjeEMps3k1gHu8JPG3xrA0-bRoYoVIkaJiramZ7kTmEol5H1f8I_BwQZNp5iLlR7rw"/>
+</div>
+<h4 class="font-headline font-bold text-lg">Cyber-Jazz Fusion</h4>
+<p class="text-sm text-on-surface-variant mb-4">Detected 2 hours ago • Urban Cafe</p>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-xs font-bold rounded-full">Experimental</span>
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-xs font-bold rounded-full">High-Energy</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg group hover:bg-surface-container-low transition-all">
+<div class="aspect-square w-full rounded-lg mb-4 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Dark silhouette of a DJ in front of a bright purple and magenta stage light background with atmospheric haze" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCip891YpBZDNdzO9_dTvyliN1m4-WjJ7b_9Xs-nuUauTMA99HcxOXYo4l-Guvz7Ckw9-dsXOEwJlbcUmh1h__L2z29jOHK9r4AnVBOl3gGEwnNnZGy9tZsSEXu5ZnhMNv9dhJVNdxQgzIPbu-d8aHxxXudRGQUDMccDH4UZalepJ0LJjB-hsHXKCoNgszbyAsavWaBFRbWf_udcjlp8GbTrAvjZjwN1dF6bMifkLiK6lxCvQ_Hr8daqLabAwmAsq7vxFZBIHUCYw"/>
+</div>
+<h4 class="font-headline font-bold text-lg">Industrial Techno</h4>
+<p class="text-sm text-on-surface-variant mb-4">Detected 5 hours ago • Studio B</p>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-xs font-bold rounded-full">Electronic</span>
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-xs font-bold rounded-full">Aggressive</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg group hover:bg-surface-container-low transition-all">
+<div class="aspect-square w-full rounded-lg mb-4 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Retro vintage radio and microphone on a clean desk with warm soft indoor lighting and lavender accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8iDDDLhMXNKn7nWA2Pp5-9U5qmjXQ0m7km_zlWphKUmkeZ869EtYZIEUcSlfYwQH6HEv3AGBClaKOsuO4CcYUvVEo4OyAJqxhBzcYmwUMivPgSI29tl_RSDX-zQdJVrAnPH8TmM8UDHsWcakwvLIfZaLO4yIwWC0TnUpXLAr54WBBYGqwOaaTMonlLDF5OVzKWSkCoq6ToEK87GWP2vKG2NQibkWDmR4RQpEvtlqFwp2NjGR1rwrroTmBK-E3lbbrT46j_YozI0k"/>
+</div>
+<h4 class="font-headline font-bold text-lg">Lo-Fi Dreamscape</h4>
+<p class="text-sm text-on-surface-variant mb-4">Detected yesterday • Workspace</p>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-xs font-bold rounded-full">Chill</span>
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-xs font-bold rounded-full">Ambient</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-8 mt-auto border-t border-[#b7a5d4]/15 bg-[#fcf4ff] dark:bg-slate-950">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-4">
+<p class="font-inter text-xs tracking-wide uppercase text-[#36274e]/60 dark:text-[#fcf4ff]/60">
+                © 2024 Gen Scope. The Sonic Curator experience.
+            </p>
+<div class="flex gap-8">
+<a class="font-inter text-xs tracking-wide uppercase text-[#36274e]/60 dark:text-[#fcf4ff]/60 hover:text-[#5d3fd3] transition-colors" href="#">Privacy</a>
+<a class="font-inter text-xs tracking-wide uppercase text-[#36274e]/60 dark:text-[#fcf4ff]/60 hover:text-[#5d3fd3] transition-colors" href="#">Terms</a>
+<a class="font-inter text-xs tracking-wide uppercase text-[#36274e]/60 dark:text-[#fcf4ff]/60 hover:text-[#5d3fd3] transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 glass-card border-t border-outline-variant/10 flex justify-around items-center py-4 px-6 z-50">
+<button class="flex flex-col items-center gap-1 text-[#5d3fd3]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">radar</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Analyze</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant/70">
+<span class="material-symbols-outlined">library_music</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Library</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant/70">
+<span class="material-symbols-outlined">history</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">History</span>
+</button>
+</nav>
+<script defer src="gen_scope.js"></script>
+</body></html>

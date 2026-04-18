@@ -1,0 +1,15 @@
+venv/
+.venv/
+venv64/
+node_modules/
+*.wav
+*.mp3
+*.png
+*.jpg
+*.npy
+*.pt
+*.h5
+__pycache__/
+dataset/
+spectrograms/
+spectrograms_10s/
