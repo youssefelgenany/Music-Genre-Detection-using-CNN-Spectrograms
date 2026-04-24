@@ -1,0 +1,219 @@
+@import "tailwindcss";
+
+/* Navy dashboard palette — primary #0B1F3A, secondary #1E3A5F, accent #3B82F6, bg #0F172A, surface #1E293B */
+@theme {
+  --color-background: #0f172a;
+  --color-on-background: #f1f5f9;
+  --color-surface: #1e293b;
+  --color-on-surface: #f8fafc;
+  --color-on-surface-variant: #94a3b8;
+
+  --color-surface-container-lowest: #0f172a;
+  --color-surface-container-low: #1e293b;
+  --color-surface-container: #273549;
+  --color-surface-container-high: #334155;
+  --color-surface-container-highest: #3d4f63;
+
+  --color-primary: #0b1f3a;
+  --color-primary-container: #3b82f6;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #eff6ff;
+
+  --color-secondary: #1e3a5f;
+  --color-on-secondary: #e2e8f0;
+  --color-secondary-container: #1e3a5f;
+  --color-on-secondary-container: #cbd5e1;
+
+  --color-accent: #3b82f6;
+  --color-on-accent: #ffffff;
+
+  --color-outline: #475569;
+  --color-outline-variant: #334155;
+  --color-surface-tint: #3b82f6;
+
+  --color-inverse-surface: #f8fafc;
+  --color-inverse-on-surface: #0f172a;
+
+  --color-error: #f87171;
+  --color-error-container: rgba(248, 113, 113, 0.12);
+  --color-on-error: #fecaca;
+  --color-on-error-container: #fecaca;
+
+  --color-tertiary: #64748b;
+  --color-tertiary-container: #334155;
+  --color-on-tertiary: #f1f5f9;
+  --color-on-tertiary-container: #cbd5e1;
+  --color-on-tertiary-fixed: #e2e8f0;
+  --color-on-tertiary-fixed-variant: #94a3b8;
+
+  --color-surface-variant: #334155;
+  --color-surface-bright: #1e293b;
+  --color-surface-dim: #0f172a;
+
+  --color-primary-dim: #082035;
+  --color-primary-fixed: #3b82f6;
+  --color-primary-fixed-dim: #2563eb;
+  --color-on-primary-fixed: #ffffff;
+  --color-on-primary-fixed-variant: #cbd5e1;
+
+  --color-secondary-fixed: #1e3a5f;
+  --color-secondary-fixed-dim: #152a45;
+  --color-on-secondary-fixed: #e2e8f0;
+  --color-on-secondary-fixed-variant: #94a3b8;
+
+  --color-inverse-primary: #3b82f6;
+
+  --radius-DEFAULT: 1rem;
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+
+  --font-headline: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+.glass-card {
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(24px);
+  border-color: rgba(71, 85, 105, 0.35);
+}
+
+/* HTML5 range — smooth scrub bar */
+.player-progress {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 0.25rem;
+  border-radius: 9999px;
+  background: rgb(51 65 85 / 0.85);
+}
+.player-progress::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-top: -0.25rem;
+  border-radius: 9999px;
+  background: var(--color-accent, #3b82f6);
+  box-shadow: 0 0 0 2px rgb(15 23 42 / 0.9);
+  cursor: pointer;
+}
+.player-progress::-moz-range-track {
+  height: 0.25rem;
+  border-radius: 9999px;
+  background: rgb(51 65 85 / 0.85);
+}
+.player-progress::-moz-range-thumb {
+  width: 0.75rem;
+  height: 0.75rem;
+  border: none;
+  border-radius: 9999px;
+  background: var(--color-accent, #3b82f6);
+  cursor: pointer;
+}
+
+/* Now-playing row: EQ bars */
+@keyframes player-eq-a {
+  0%,
+  100% {
+    height: 4px;
+  }
+  50% {
+    height: 14px;
+  }
+}
+@keyframes player-eq-b {
+  0%,
+  100% {
+    height: 10px;
+  }
+  50% {
+    height: 5px;
+  }
+}
+@keyframes player-eq-c {
+  0%,
+  100% {
+    height: 6px;
+  }
+  50% {
+    height: 14px;
+  }
+}
+.player-eq-bar:nth-child(1) {
+  animation: player-eq-a 0.55s ease-in-out infinite;
+}
+.player-eq-bar:nth-child(2) {
+  animation: player-eq-b 0.45s ease-in-out infinite;
+}
+.player-eq-bar:nth-child(3) {
+  animation: player-eq-c 0.65s ease-in-out infinite;
+}
+
+/* Track title / art swap when song changes */
+@keyframes player-track-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.player-track-enter {
+  animation: player-track-enter 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Mic button: glow only while .mic-recording */
+.mic-recording {
+  animation: mic-recording-glow 1.6s ease-in-out infinite;
+}
+
+@keyframes mic-recording-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 20px 50px rgba(220, 38, 38, 0.35),
+      0 0 0 0 rgba(220, 38, 38, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 28px 60px rgba(220, 38, 38, 0.5),
+      0 0 32px 8px rgba(248, 113, 113, 0.35);
+  }
+}
+
+.mic-ring-outer--recording {
+  animation: mic-ring-ripple 2.2s ease-in-out infinite;
+}
+
+.mic-ring-inner--recording {
+  animation: mic-ring-breathe 1.8s ease-in-out infinite;
+}
+
+@keyframes mic-ring-ripple {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.55;
+  }
+}
+
+@keyframes mic-ring-breathe {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.42;
+    transform: scale(1.03);
+  }
+}
+
+body {
+  font-family: var(--font-body);
+}

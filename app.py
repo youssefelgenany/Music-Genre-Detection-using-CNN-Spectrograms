@@ -258,10 +258,16 @@ async def predict(file: UploadFile = File(...)):
 
         with torch.no_grad():
             logits = model(input_tensor)
+            probs = torch.softmax(logits, dim=1)
             pred_idx = int(torch.argmax(logits, dim=1).item())
+            confidence = float(probs[0, pred_idx].item())
 
         label = class_names[pred_idx]
-        return {"predicted_genre": label, "genre": label}
+        return {
+            "predicted_genre": label,
+            "genre": label,
+            "confidence": confidence,
+        }
     except Exception as exc:
         detail = f"{type(exc).__name__}: {exc}"
         raise HTTPException(status_code=400, detail=detail) from exc

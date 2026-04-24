@@ -1,25 +1,70 @@
 (function () {
   "use strict";
 
-  const micBtn = document.querySelector("button.relative.z-20");
-  const heroH1 = document.querySelector(
-    "section.flex-grow > div.relative.overflow-hidden h1"
-  );
-  const hintP = document.querySelector("div.md\\:col-span-2 > p.mt-8");
+  const micBtn = document.getElementById("mic-record-btn");
+  const micBtnLabel = document.getElementById("mic-btn-label");
+  const micPulseRings = document.getElementById("mic-pulse-rings");
+  const micRingPing = document.getElementById("mic-ring-ping");
+  const micRingPulse = document.getElementById("mic-ring-pulse");
+
+  const heroH1 = document.getElementById("hero-detected-genre");
+  const hint = document.getElementById("mic-hint");
+
   const browseBtn = Array.from(document.querySelectorAll("button")).find(
     (b) => b.textContent.trim() === "Browse Files"
   );
-  const uploadPanel = document.querySelector(
-    "div.grid.grid-cols-1.md\\:grid-cols-3.gap-6 > div:last-child"
-  );
+  const uploadPanel = document.querySelector("[data-upload-panel]");
 
-  if (!micBtn || !heroH1 || !hintP) {
+  if (!micBtn || !heroH1 || !hint) {
     return;
   }
 
-  const defaultHint = hintP.textContent.trim();
+  const defaultHint = hint.textContent.trim();
+  const defaultLabel = micBtnLabel ? micBtnLabel.textContent.trim() : "Start Recording";
+
+  /** Idle vs recording: calm button until mic capture is active */
+  const micIdleClasses = [
+    "bg-gradient-to-br",
+    "from-primary",
+    "to-primary-container",
+    "shadow-[0_20px_50px_rgba(93,63,211,0.3)]",
+    "group-hover:shadow-[0_25px_60px_rgba(93,63,211,0.4)]",
+    "scale-100",
+  ];
+  const micRecordingClasses = [
+    "bg-gradient-to-br",
+    "from-[#c02626]",
+    "to-[#f87171]",
+    "shadow-[0_24px_55px_rgba(220,38,38,0.45)]",
+    "scale-105",
+    "mic-recording",
+  ];
 
   let busy = false;
+  let isRecording = false;
+
+  function setRecordingState(on) {
+    isRecording = !!on;
+    micBtn.setAttribute("aria-pressed", isRecording ? "true" : "false");
+
+    micIdleClasses.forEach((c) => micBtn.classList.toggle(c, !isRecording));
+    micRecordingClasses.forEach((c) => micBtn.classList.toggle(c, isRecording));
+
+    if (micBtnLabel) {
+      micBtnLabel.textContent = isRecording ? "Recording..." : defaultLabel;
+    }
+
+    if (micPulseRings) {
+      micPulseRings.classList.toggle("opacity-0", !isRecording);
+      micPulseRings.classList.toggle("opacity-100", isRecording);
+    }
+    if (micRingPing) {
+      micRingPing.classList.toggle("animate-ping", isRecording);
+    }
+    if (micRingPulse) {
+      micRingPulse.classList.toggle("animate-pulse", isRecording);
+    }
+  }
 
   function genreFromJson(data) {
     if (!data || typeof data !== "object") return "";
@@ -28,7 +73,6 @@
 
   async function postAudioFile(file) {
     const formData = new FormData();
-    // Debug: verify what will be sent to FastAPI UploadFile
     console.log("[predict] blob size:", file.size);
     console.log("[predict] blob type:", file.type || "unknown");
 
@@ -81,7 +125,7 @@
     writeString(8, "WAVE");
     writeString(12, "fmt ");
     view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true); // PCM
+    view.setUint16(20, 1, true);
     view.setUint16(22, channels, true);
     view.setUint32(24, sampleRate, true);
     view.setUint32(28, sampleRate * blockAlign, true);
@@ -112,6 +156,8 @@
 
   async function recordMicAsWavFile(durationMs) {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    setRecordingState(true);
+
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const source = audioCtx.createMediaStreamSource(stream);
     const processor = audioCtx.createScriptProcessor(4096, 1, 1);
@@ -130,6 +176,7 @@
       const wavBlob = float32MonoToWavBlob(merged, audioCtx.sampleRate);
       return new File([wavBlob], "recording.wav", { type: "audio/wav" });
     } finally {
+      setRecordingState(false);
       source.disconnect();
       processor.disconnect();
       stream.getTracks().forEach((t) => t.stop());
@@ -140,27 +187,27 @@
   micBtn.addEventListener("click", async () => {
     if (busy) return;
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      hintP.textContent = "Recording not supported in this browser.";
+      hint.textContent = "Recording not supported in this browser.";
       return;
     }
 
     busy = true;
-    hintP.textContent = "Recording...";
+    hint.textContent = defaultHint;
 
     try {
       const file = await recordMicAsWavFile(10000);
-      hintP.textContent = "Analyzing...";
+      hint.textContent = "Analyzing...";
       console.log("[recording] wav blob size:", file.size);
       console.log("[recording] wav blob type:", file.type || "unknown");
       const data = await postAudioFile(file);
       setGenreDisplay(genreFromJson(data));
     } catch (err) {
-      hintP.textContent =
+      hint.textContent =
         "Error: " + (err && err.message ? err.message : String(err));
       busy = false;
       return;
     }
-    hintP.textContent = defaultHint;
+    hint.textContent = defaultHint;
     busy = false;
   });
 
@@ -186,17 +233,17 @@
       input.value = "";
       if (!file || busy) return;
       busy = true;
-      hintP.textContent = "Analyzing...";
+      hint.textContent = "Analyzing...";
       try {
         const data = await postAudioFile(file);
         setGenreDisplay(genreFromJson(data));
       } catch (err) {
-        hintP.textContent =
+        hint.textContent =
           "Error: " + (err && err.message ? err.message : String(err));
         busy = false;
         return;
       }
-      hintP.textContent = defaultHint;
+      hint.textContent = defaultHint;
       busy = false;
     });
   }
@@ -213,17 +260,17 @@
       const file = e.dataTransfer.files && e.dataTransfer.files[0];
       if (!file) return;
       busy = true;
-      hintP.textContent = "Analyzing...";
+      hint.textContent = "Analyzing...";
       try {
         const data = await postAudioFile(file);
         setGenreDisplay(genreFromJson(data));
       } catch (err) {
-        hintP.textContent =
+        hint.textContent =
           "Error: " + (err && err.message ? err.message : String(err));
         busy = false;
         return;
       }
-      hintP.textContent = defaultHint;
+      hint.textContent = defaultHint;
       busy = false;
     });
   }
