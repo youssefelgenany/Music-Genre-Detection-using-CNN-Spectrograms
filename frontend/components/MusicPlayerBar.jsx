@@ -32,6 +32,12 @@ export default function MusicPlayerBar() {
     };
   }, []);
 
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production") {
+      console.log("[MusicPlayerBar] currentSong:", currentSong);
+    }
+  }, [currentSong]);
+
   const onProgressChange = useCallback(
     (e) => {
       const v = Number(e.target.value);
@@ -43,6 +49,11 @@ export default function MusicPlayerBar() {
   if (!hasQueue || !currentSong) {
     return null;
   }
+
+  const coverSrc =
+    typeof currentSong.cover === "string" && currentSong.cover.trim().startsWith("/")
+      ? currentSong.cover
+      : "/covers/default.jpg";
 
   const canNext = currentIndex < playlistLength - 1;
   const p = Number.isFinite(progress) ? progress : 0;
@@ -89,9 +100,13 @@ export default function MusicPlayerBar() {
                 key={currentSong.id}
                 className={`relative h-11 w-11 shrink-0 overflow-hidden rounded-md bg-gradient-to-br shadow-md ring-1 ring-white/10 transition-transform duration-300 ease-out sm:h-14 sm:w-14 player-track-enter ${isPlaying ? "scale-100" : "scale-[0.98]"}`}
               >
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${currentSong.coverGradientClass}`}
-                  aria-hidden
+                <img
+                  src={coverSrc}
+                  alt={currentSong.title}
+                  className="absolute inset-0 h-full w-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = "/covers/default.jpg";
+                  }}
                 />
               </div>
               <div

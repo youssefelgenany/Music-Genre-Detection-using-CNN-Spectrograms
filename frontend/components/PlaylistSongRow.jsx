@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import { useAudioDuration } from "@/hooks/useAudioDuration";
 import { formatScanTitle, LIBRARY_ARTIST } from "@/lib/trackFormatting";
@@ -8,6 +10,7 @@ export default function PlaylistSongRow({
   trackId,
   timestamp,
   audioUrl,
+  coverImageSrc,
   coverGradientClass,
   index,
   isCurrent,
@@ -18,12 +21,28 @@ export default function PlaylistSongRow({
   playbackDisabled = false,
 }) {
   const duration = useAudioDuration(audioUrl);
+  const [imageSrc, setImageSrc] = useState(
+    typeof coverImageSrc === "string" && coverImageSrc.trim()
+      ? coverImageSrc
+      : "/covers/blues11.jpg",
+  );
   const title =
     songTitle ??
     (timestamp != null ? formatScanTitle(timestamp) : "Untitled");
   const artist = songArtist ?? LIBRARY_ARTIST;
   const showPauseOnCover = isCurrent && isPlaying;
   const isActive = isCurrent && isPlaying;
+  const hasCoverImage = Boolean(
+    typeof imageSrc === "string" && imageSrc.trim().startsWith("/"),
+  );
+
+  useEffect(() => {
+    setImageSrc(
+      typeof coverImageSrc === "string" && coverImageSrc.trim()
+        ? coverImageSrc
+        : "/covers/blues11.jpg",
+    );
+  }, [coverImageSrc]);
 
   return (
     <button
@@ -72,12 +91,25 @@ export default function PlaylistSongRow({
             isActive ? "ring-accent/40" : "group-hover:ring-outline/30"
           } group-hover:scale-[1.04]`}
         >
-          <div
-            className={`absolute inset-0 bg-gradient-to-br transition-opacity duration-200 ${coverGradientClass} ${
-              isActive ? "opacity-100" : "opacity-95 group-hover:opacity-100"
-            }`}
-            aria-hidden
-          />
+          {hasCoverImage ? (
+            <Image
+              src={imageSrc}
+              alt={title}
+              width={60}
+              height={60}
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-200 ${
+                isActive ? "opacity-100" : "opacity-95 group-hover:opacity-100"
+              }`}
+              onError={() => setImageSrc("/covers/blues11.jpg")}
+            />
+          ) : (
+            <div
+              className={`absolute inset-0 bg-gradient-to-br transition-opacity duration-200 ${coverGradientClass} ${
+                isActive ? "opacity-100" : "opacity-95 group-hover:opacity-100"
+              }`}
+              aria-hidden
+            />
+          )}
           <div
             className="absolute inset-0 flex items-center justify-center bg-black/55 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
             aria-hidden

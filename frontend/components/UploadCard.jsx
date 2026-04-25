@@ -1,10 +1,16 @@
 "use client";
 
 import { useRef } from "react";
-import { Upload } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
 
-export default function UploadCard({ disabled = false, onFileSelected }) {
+export default function UploadCard({
+  disabled = false,
+  isUploading = false,
+  isProcessing = false,
+  onFileSelected,
+}) {
   const inputRef = useRef(null);
+  const showBusy = isUploading || isProcessing;
 
   function handleBrowseClick(e) {
     e.preventDefault();
@@ -51,7 +57,7 @@ export default function UploadCard({ disabled = false, onFileSelected }) {
         aria-label="Choose audio file"
       />
       <Upload
-        className="mb-4 h-9 w-9 text-accent"
+        className={`mb-4 h-9 w-9 text-accent ${showBusy ? "opacity-40" : ""}`}
         strokeWidth={1.75}
         aria-hidden
       />
@@ -61,6 +67,12 @@ export default function UploadCard({ disabled = false, onFileSelected }) {
       <p className="text-sm text-center text-on-surface-variant mb-6">
         Drop your .mp3 or .wav files here for deep analysis.
       </p>
+      {showBusy ? (
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-surface-container-highest px-3 py-1.5 text-xs font-medium text-on-surface-variant">
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+          {isUploading ? "Uploading audio..." : "Processing audio..."}
+        </div>
+      ) : null}
       <button
         type="button"
         onClick={handleBrowseClick}

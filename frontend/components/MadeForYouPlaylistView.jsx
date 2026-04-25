@@ -13,6 +13,7 @@ import { MADE_FOR_YOU_TOTAL } from "@/lib/madeForYou";
 
 const HERO_COVER =
   "from-indigo-950 via-primary to-blue-600";
+const MADE_FOR_YOU_COVER = "/covers/made.jpg";
 
 export default function MadeForYouPlaylistView() {
   const {
@@ -82,9 +83,13 @@ export default function MadeForYouPlaylistView() {
             </Link>
 
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-8">
-              <div
-                className={`mx-auto h-40 w-40 shrink-0 rounded-lg bg-gradient-to-br shadow-2xl sm:mx-0 sm:h-48 sm:w-48 ${HERO_COVER}`}
-                aria-hidden
+              <img
+                src={MADE_FOR_YOU_COVER}
+                alt={name}
+                className="mx-auto h-[200px] w-[200px] shrink-0 rounded-2xl object-cover shadow-2xl sm:mx-0 sm:h-[240px] sm:w-[240px]"
+                onError={(e) => {
+                  e.currentTarget.src = "/covers/default.jpg";
+                }}
               />
               <div className="min-w-0 flex-1 text-center sm:pb-2 sm:text-left">
                 <p className="mb-1 text-xs font-bold uppercase tracking-widest text-on-surface-variant">
@@ -142,6 +147,7 @@ export default function MadeForYouPlaylistView() {
                       trackId={s.id}
                       index={i}
                       audioUrl={s.audioUrl}
+                      coverImageSrc={s.cover}
                       coverGradientClass={cover}
                       songTitle={s.title}
                       songArtist={s.artist}

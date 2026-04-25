@@ -198,7 +198,7 @@ function capAndRedistributeSurplus(alloc, poolSizes) {
  */
 
 /**
- * Build a personalized playlist from scan history and hardcoded mixtape pools.
+ * Build a personalized playlist from stored scans and hardcoded mixtape pools.
  *
  * 1. Count genres in `scannedSongs`
  * 2. Normalize to percentages (for display; balanced if no scans)

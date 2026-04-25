@@ -14,7 +14,7 @@ export function formatScanTitle(timestamp) {
 }
 
 /**
- * @param {Array<{ id: string, audioUrl: string, timestamp: number }>} tracks
+ * @param {Array<{ id: string, audioUrl: string, timestamp: number, cover?: string }>} tracks
  * @param {string} coverGradientClass
  */
 export function buildQueueFromScanned(tracks, coverGradientClass) {
@@ -23,6 +23,10 @@ export function buildQueueFromScanned(tracks, coverGradientClass) {
     audioUrl: t.audioUrl,
     title: formatScanTitle(t.timestamp),
     artist: LIBRARY_ARTIST,
+    cover:
+      typeof t.cover === "string" && t.cover.trim().startsWith("/")
+        ? t.cover
+        : "/covers/default.jpg",
     coverGradientClass,
   }));
 }
@@ -37,6 +41,10 @@ export function buildQueueFromMixtapeSongs(songs, defaultCoverGradient) {
     audioUrl: s.audioUrl,
     title: s.title,
     artist: s.artist,
+    cover:
+      typeof s.cover === "string" && s.cover.trim().startsWith("/")
+        ? s.cover
+        : "/covers/default.jpg",
     coverGradientClass:
       typeof s.cover === "string" && s.cover.trim().startsWith("from-")
         ? s.cover

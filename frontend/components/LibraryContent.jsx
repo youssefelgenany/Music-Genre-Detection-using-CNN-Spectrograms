@@ -5,13 +5,19 @@ import Sidebar from "@/components/Sidebar";
 import GenreScanCard from "@/components/GenreScanCard";
 import MadeForYouCard from "@/components/MadeForYouCard";
 import MixtapeCard from "@/components/MixtapeCard";
+import { mixtapes } from "@/data/mixtapes";
 import { useMadeForYouPlaylist } from "@/hooks/useMadeForYouPlaylist";
 import { useScannedMusic } from "@/hooks/useScannedMusic";
 import { SCANNED_GENRES } from "@/lib/libraryData";
-import {
-  MIXTAPE_PLAYLISTS,
-  defaultCoverForGenre,
-} from "@/lib/mixtapePlaylists";
+import { defaultCoverForGenre } from "@/lib/mixtapePlaylists";
+
+function genreToCoverImage(name) {
+  const slug = String(name ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+  return `/covers/${slug}.jpg`;
+}
 
 export default function LibraryContent() {
   const { byGenre, loading } = useScannedMusic();
@@ -42,6 +48,7 @@ export default function LibraryContent() {
                     <GenreScanCard
                       key={item.name}
                       title={item.name}
+                      coverImageSrc={genreToCoverImage(item.name)}
                       coverGradientClass={item.cover}
                       tracks={byGenre[item.name] ?? []}
                     />
@@ -61,13 +68,16 @@ export default function LibraryContent() {
                   percentages={madeForYou.percentages}
                   loading={madeForYou.loading}
                 />
-                {MIXTAPE_PLAYLISTS.map((item) => (
+                {mixtapes.map((item) => (
                   <MixtapeCard
                     key={item.genre}
-                    genreName={item.genre}
-                    playlistTitle={item.playlistTitle}
+                    genreName={`${item.genre.charAt(0).toUpperCase()}${item.genre.slice(1)}`}
+                    playlistTitle={`${item.genre.charAt(0).toUpperCase()}${item.genre.slice(1)} Mixtape`}
                     trackCount={item.songs.length}
-                    coverGradientClass={defaultCoverForGenre(item.genre)}
+                    coverImageSrc={item.cover}
+                    coverGradientClass={defaultCoverForGenre(
+                      `${item.genre.charAt(0).toUpperCase()}${item.genre.slice(1)}`,
+                    )}
                   />
                 ))}
               </div>

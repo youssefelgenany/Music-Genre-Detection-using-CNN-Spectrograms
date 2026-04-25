@@ -15,10 +15,19 @@ import {
 } from "@/lib/scannedMusicStore";
 import { SCANNED_GENRES } from "@/lib/libraryData";
 
+function genreToCoverImage(name) {
+  const slug = String(name ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+  return `/covers/${slug}.jpg`;
+}
+
 export default function GenrePlaylistView({ genre }) {
   const cover =
     SCANNED_GENRES.find((g) => g.name === genre)?.cover ??
     "from-slate-900 to-slate-700";
+  const coverImage = genreToCoverImage(genre);
 
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -86,9 +95,13 @@ export default function GenrePlaylistView({ genre }) {
             </Link>
 
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-8">
-              <div
-                className={`mx-auto h-40 w-40 shrink-0 rounded-lg bg-gradient-to-br shadow-2xl sm:mx-0 sm:h-48 sm:w-48 ${cover}`}
-                aria-hidden
+              <img
+                src={coverImage}
+                alt={genre}
+                className="mx-auto h-[200px] w-[200px] shrink-0 rounded-2xl object-cover shadow-2xl sm:mx-0 sm:h-[240px] sm:w-[240px]"
+                onError={(e) => {
+                  e.currentTarget.src = "/covers/default.jpg";
+                }}
               />
               <div className="min-w-0 flex-1 text-center sm:pb-2 sm:text-left">
                 <p className="mb-1 text-xs font-bold uppercase tracking-widest text-on-surface-variant">
@@ -125,6 +138,7 @@ export default function GenrePlaylistView({ genre }) {
                       index={i}
                       timestamp={t.timestamp}
                       audioUrl={t.audioUrl}
+                      coverImageSrc={t.cover}
                       coverGradientClass={cover}
                       isCurrent={isTrackCurrent(t.id)}
                       isPlaying={isTrackCurrent(t.id) && isPlaying}

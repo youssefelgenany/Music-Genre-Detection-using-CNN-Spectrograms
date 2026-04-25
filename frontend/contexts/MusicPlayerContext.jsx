@@ -11,7 +11,7 @@ import {
 } from "react";
 
 /**
- * @typedef {{ id: string, audioUrl: string, title: string, artist: string, coverGradientClass: string }} PlayerTrack
+ * @typedef {{ id: string, audioUrl: string, title: string, artist: string, cover?: string, coverGradientClass: string }} PlayerTrack
  *
  * @typedef {{
  *   currentSong: PlayerTrack | null,
@@ -49,12 +49,13 @@ export function MusicPlayerProvider({ children }) {
   const queueRef = useRef(/** @type {PlayerTrack[]} */ ([]));
   const [playlist, setPlaylist] = useState(/** @type {PlayerTrack[]} */ ([]));
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentSong, setCurrentSong] = useState(
+    /** @type {PlayerTrack | null} */ (null),
+  );
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const rafRef = useRef(0);
-
-  const currentSong = playlist[currentIndex] ?? null;
   const hasQueue = playlist.length > 0;
   const progress = duration > 0 ? currentTime / duration : 0;
 
@@ -69,14 +70,39 @@ export function MusicPlayerProvider({ children }) {
     rafRef.current = requestAnimationFrame(tick);
   }, []);
 
-  /** Keep the single HTMLAudioElement aligned with React state (one stream at a time). */
+  /** Keep current song in sync with queue index. */
+  useEffect(() => {
+    const track = playlist[currentIndex];
+    setCurrentSong(track ?? null);
+  }, [playlist, currentIndex]);
+
+  /** Keep one managed Audio() instance alive and aligned with current song. */
+  useEffect(() => {
+    const src = String(currentSong?.audioUrl ?? "").trim();
+    if (!src) return;
+    const prev = audioRef.current;
+    if (prev?.src === src) return;
+
+    // Stop previous stream before switching songs.
+    if (prev) {
+      prev.pause();
+      prev.currentTime = 0;
+    }
+
+    const nextAudio = new Audio(src);
+    nextAudio.preload = "metadata";
+    audioRef.current = nextAudio;
+    setCurrentTime(0);
+    setDuration(0);
+  }, [currentSong?.id, currentSong?.audioUrl]);
+
+  /** Play/pause only controls the existing audio instance (resume safe). */
   useEffect(() => {
     const el = audioRef.current;
-    const track = playlist[currentIndex];
-    if (!el || !track?.audioUrl?.trim()) return;
-    if (el.src === track.audioUrl) return;
-    el.src = track.audioUrl;
-  }, [playlist, currentIndex, currentSong?.id, currentSong?.audioUrl]);
+    if (!el) return;
+    if (isPlaying) el.play().catch(() => {});
+    else el.pause();
+  }, [isPlaying, currentSong?.id]);
 
   useEffect(() => {
     const el = audioRef.current;
@@ -105,11 +131,7 @@ export function MusicPlayerProvider({ children }) {
         const q = queueRef.current;
         if (i < q.length - 1) {
           const ni = i + 1;
-          const t = q[ni];
-          if (el && t) {
-            el.src = t.audioUrl;
-            el.play().catch(() => {});
-          }
+          setCurrentSong(q[ni] ?? null);
           return ni;
         }
         return i;
@@ -132,7 +154,7 @@ export function MusicPlayerProvider({ children }) {
       el.removeEventListener("timeupdate", onTimeUpdate);
       el.removeEventListener("ended", onEnded);
     };
-  }, [tick]);
+  }, [tick, currentSong?.id, currentSong?.audioUrl]);
 
   const playQueue = useCallback((items, startIndex = 0) => {
     if (!items?.length) return;
@@ -141,12 +163,8 @@ export function MusicPlayerProvider({ children }) {
     queueRef.current = next;
     setPlaylist(next);
     setCurrentIndex(i);
-    const el = audioRef.current;
-    const t = next[i];
-    if (el && t?.audioUrl?.trim()) {
-      el.src = t.audioUrl;
-      el.play().catch(() => {});
-    }
+    setCurrentSong(next[i] ?? null);
+    setIsPlaying(true);
   }, []);
 
   const togglePlayPause = useCallback(() => {
@@ -161,12 +179,8 @@ export function MusicPlayerProvider({ children }) {
       const q = queueRef.current;
       const ni = Math.min(i + 1, q.length - 1);
       if (ni === i) return i;
-      const el = audioRef.current;
-      const t = q[ni];
-      if (el && t?.audioUrl?.trim()) {
-        el.src = t.audioUrl;
-        el.play().catch(() => {});
-      }
+      setCurrentSong(q[ni] ?? null);
+      setIsPlaying(true);
       return ni;
     });
   }, []);
@@ -175,24 +189,20 @@ export function MusicPlayerProvider({ children }) {
     setCurrentIndex((i) => {
       const q = queueRef.current;
       const el = audioRef.current;
-      if (!el) return i;
-      if (el.currentTime > 3) {
+      if (el && el.currentTime > 3) {
         el.currentTime = 0;
         setCurrentTime(0);
         return i;
       }
       const ni = Math.max(i - 1, 0);
       if (ni === i) {
-        el.currentTime = 0;
+        if (el) el.currentTime = 0;
         setCurrentTime(0);
-        el.play().catch(() => {});
+        setIsPlaying(true);
         return i;
       }
-      const t = q[ni];
-      if (t?.audioUrl?.trim()) {
-        el.src = t.audioUrl;
-        el.play().catch(() => {});
-      }
+      setCurrentSong(q[ni] ?? null);
+      setIsPlaying(true);
       return ni;
     });
   }, []);
@@ -272,7 +282,6 @@ export function MusicPlayerProvider({ children }) {
 
   return (
     <MusicPlayerContext.Provider value={value}>
-      <audio ref={audioRef} className="hidden" preload="metadata" />
       {children}
     </MusicPlayerContext.Provider>
   );

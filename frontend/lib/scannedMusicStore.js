@@ -10,6 +10,14 @@ const LS_META_KEY = "gen-scope-scanned-meta";
 
 export const SCANNED_MUSIC_CHANGED = "gen-scope-scanned-music-changed";
 
+function genreToCover(genre) {
+  const slug = String(genre ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+  return `/covers/${slug}.jpg`;
+}
+
 function dispatchChanged() {
   if (typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent(SCANNED_MUSIC_CHANGED));
@@ -49,7 +57,7 @@ function writeMetaIndex(entries) {
 /**
  * @param {File | Blob} file
  * @param {string} genre — canonical genre folder name
- * @returns {Promise<{ id: string, genre: string, timestamp: number, audioUrl: string }>}
+ * @returns {Promise<{ id: string, genre: string, timestamp: number, audioUrl: string, cover: string }>}
  */
 export async function saveScannedTrack(file, genre) {
   const id =
@@ -76,7 +84,7 @@ export async function saveScannedTrack(file, genre) {
   const audioUrl = URL.createObjectURL(blob);
   dispatchChanged();
 
-  return { id, genre, timestamp, audioUrl };
+  return { id, genre, timestamp, audioUrl, cover: genreToCover(genre) };
 }
 
 /**
@@ -93,7 +101,7 @@ export async function getAllScannedRecords() {
 }
 
 /**
- * @returns {Promise<Array<{ id: string, genre: string, timestamp: number, audioUrl: string }>>}
+ * @returns {Promise<Array<{ id: string, genre: string, timestamp: number, audioUrl: string, cover: string }>>}
  */
 export async function getAllScannedWithUrls() {
   const rows = await getAllScannedRecords();
@@ -102,12 +110,13 @@ export async function getAllScannedWithUrls() {
     genre: r.genre,
     timestamp: r.timestamp,
     audioUrl: URL.createObjectURL(r.blob),
+    cover: genreToCover(r.genre),
   }));
 }
 
 /**
  * @param {string} genre — canonical genre name
- * @returns {Promise<Array<{ id: string, genre: string, timestamp: number, audioUrl: string }>>}
+ * @returns {Promise<Array<{ id: string, genre: string, timestamp: number, audioUrl: string, cover: string }>>}
  */
 export async function getScannedTracksForGenre(genre) {
   const rows = await getAllScannedWithUrls();

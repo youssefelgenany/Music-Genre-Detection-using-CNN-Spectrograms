@@ -6,30 +6,13 @@ Usage:
 """
 
 import argparse
-import os
-import tempfile
-
-import librosa
-import numpy as np
-from PIL import Image
 import torch
 import torch.nn as nn
 from torchvision import models, transforms
-from generate_mel_spectrogram import (
-    convert_to_decibels,
-    generate_mel_spectrogram,
-    save_spectrogram,
-)
+from audio_pipeline import process_audio_file
 
 
 MODEL_PATH = "models/music_genre_cnn.pth"
-SAMPLE_RATE = 22050
-SEGMENT_SECONDS = 10
-N_FFT = 2048
-HOP_LENGTH = 512
-N_MELS = 128
-
-
 def load_model_and_classes(checkpoint_path: str = MODEL_PATH):
     """Load checkpoint and rebuild model on CPU."""
     checkpoint = torch.load(checkpoint_path, map_location="cpu")
@@ -44,48 +27,9 @@ def load_model_and_classes(checkpoint_path: str = MODEL_PATH):
     return model, class_names
 
 
-def load_first_10_seconds(audio_path: str, sr: int = SAMPLE_RATE) -> np.ndarray:
-    """Load only the first 10 seconds of audio."""
-    if not os.path.exists(audio_path):
-        raise FileNotFoundError(f"Audio file not found: {audio_path}")
-
-    y, _ = librosa.load(audio_path, sr=sr, duration=SEGMENT_SECONDS)
-    if len(y) == 0:
-        raise ValueError("Loaded audio is empty.")
-    return y
-
-
-def audio_to_spectrogram_image(y: np.ndarray, sr: int = SAMPLE_RATE) -> Image.Image:
-    """
-    Convert audio to spectrogram image using the exact training script functions.
-    """
-    mel_spec = generate_mel_spectrogram(
-        y=y,
-        sr=sr,
-        n_mels=N_MELS,
-        n_fft=N_FFT,
-        hop_length=HOP_LENGTH,
-    )
-    mel_spec_db = convert_to_decibels(mel_spec)
-
-    # Use the same rendering function used for training image generation.
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp_file:
-        tmp_png_path = tmp_file.name
-    try:
-        save_spectrogram(mel_spec_db, tmp_png_path, sr=sr, hop_length=HOP_LENGTH)
-        image = Image.open(tmp_png_path).convert("RGB")
-        image = image.resize((224, 224), Image.BILINEAR)
-    finally:
-        if os.path.exists(tmp_png_path):
-            os.remove(tmp_png_path)
-
-    return image
-
-
 def predict_genre(audio_path: str) -> None:
     model, class_names = load_model_and_classes(MODEL_PATH)
-    y = load_first_10_seconds(audio_path, SAMPLE_RATE)
-    image = audio_to_spectrogram_image(y, SAMPLE_RATE)
+    image = process_audio_file(audio_path)
 
     transform = transforms.Compose(
         [
@@ -93,6 +37,8 @@ def predict_genre(audio_path: str) -> None:
         ]
     )
     input_tensor = transform(image).unsqueeze(0).to("cpu")
+    print("shape:", tuple(input_tensor.shape))
+    print("min/max:", float(input_tensor.min()), float(input_tensor.max()))
 
     with torch.no_grad():
         logits = model(input_tensor)

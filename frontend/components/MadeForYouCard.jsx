@@ -1,10 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
-
-const COVER =
-  "from-indigo-950 via-primary to-blue-600";
+const MADE_FOR_YOU_COVER = "/covers/made.jpg";
 
 /**
  * @param {Record<string, number>} percentages
@@ -50,19 +47,16 @@ export default function MadeForYouCard({
       <article className="relative flex min-h-0 flex-1 flex-col md:flex-row md:items-stretch">
         {/* Art: fixed aspect on mobile; on md fills full card height so it matches the text column */}
         <div className="relative aspect-[4/3] w-full shrink-0 md:aspect-auto md:w-[40%] md:max-w-[240px] md:self-stretch md:min-h-0">
-          <div
-            className={`absolute inset-0 bg-gradient-to-br ${COVER}`}
-            aria-hidden
+          <img
+            src={MADE_FOR_YOU_COVER}
+            alt="Made For You"
+            className="absolute inset-0 h-full w-full object-cover"
+            onError={(e) => {
+              e.currentTarget.src = "/covers/default.jpg";
+            }}
           />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(255,255,255,0.12),transparent_55%)]" />
           <div className="absolute inset-0 bg-black/10 transition group-hover:bg-black/5" />
-          <div className="relative flex h-full w-full items-center justify-center">
-            <Sparkles
-              className="h-14 w-14 text-white/95 drop-shadow-[0_2px_12px_rgba(255,255,255,0.35)] transition duration-300 group-hover:scale-110 group-hover:rotate-6 sm:h-16 sm:w-16"
-              strokeWidth={1.35}
-              aria-hidden
-            />
-          </div>
         </div>
 
         <div className="flex min-h-0 flex-1 flex-col justify-center px-5 py-5 sm:px-6 sm:py-6">

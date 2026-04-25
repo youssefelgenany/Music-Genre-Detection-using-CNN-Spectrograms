@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, History, Library, Plus } from "lucide-react";
+import { Activity, Library } from "lucide-react";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -25,7 +25,7 @@ export default function Sidebar() {
           Sonic Curator
         </p>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
         <Link href="/" className={`${base} ${onHome ? active : inactive}`}>
           <Activity className="h-5 w-5 shrink-0" strokeWidth={2} aria-hidden />
           <span className="font-body">Analyze</span>
@@ -33,22 +33,6 @@ export default function Sidebar() {
         <Link href="/library" className={`${base} ${onLibrary ? active : inactive}`}>
           <Library className="h-5 w-5 shrink-0" strokeWidth={2} aria-hidden />
           <span className="font-body">Library</span>
-        </Link>
-        <span
-          className={`${base} cursor-not-allowed bg-surface-container-high/50 text-on-surface-variant`}
-          title="Coming soon"
-        >
-          <History className="h-5 w-5 shrink-0" strokeWidth={2} aria-hidden />
-          <span className="font-body">History</span>
-        </span>
-      </div>
-      <div className="mt-12 px-2">
-        <Link
-          href="/"
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 py-4 text-sm font-bold text-white shadow-md transition hover:bg-blue-700 hover:shadow-lg"
-        >
-          <Plus className="h-5 w-5 shrink-0" strokeWidth={2.25} aria-hidden />
-          New Analysis
         </Link>
       </div>
     </aside>

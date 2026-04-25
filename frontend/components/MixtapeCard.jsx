@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Music2 } from "lucide-react";
 import { genreToSlug } from "@/lib/genreSlug";
 
 export default function MixtapeCard({
   genreName,
   playlistTitle,
   trackCount,
+  coverImageSrc,
   coverGradientClass,
 }) {
   const href = `/library/mixtape/${genreToSlug(genreName)}`;
@@ -21,12 +21,15 @@ export default function MixtapeCard({
         <div
           className={`relative flex aspect-square w-full shrink-0 items-center justify-center bg-gradient-to-br ${coverGradientClass}`}
         >
-          <div className="absolute inset-0 bg-black/10 transition group-hover:bg-black/5" />
-          <Music2
-            className="relative h-12 w-12 text-white/35 transition group-hover:scale-105 group-hover:text-white/50 sm:h-14 sm:w-14"
-            strokeWidth={1.25}
-            aria-hidden
+          <img
+            src={coverImageSrc || "/covers/default.jpg"}
+            alt={genreName}
+            className="absolute inset-0 h-full w-full object-cover"
+            onError={(e) => {
+              e.currentTarget.src = "/covers/default.jpg";
+            }}
           />
+          <div className="absolute inset-0 bg-black/10 transition group-hover:bg-black/5" />
         </div>
         <div className="flex flex-col p-4">
           <h3 className="font-headline text-base font-bold leading-snug text-on-background">

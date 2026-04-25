@@ -1,5 +1,3 @@
-import { Music2 } from "lucide-react";
-
 export default function PlaylistCard({
   title,
   trackCount,
@@ -12,11 +10,6 @@ export default function PlaylistCard({
         className={`relative flex aspect-square w-full items-center justify-center bg-gradient-to-br ${coverGradientClass}`}
       >
         <div className="absolute inset-0 bg-black/10 transition group-hover:bg-black/5" />
-        <Music2
-          className="relative h-12 w-12 text-white/35 transition group-hover:scale-105 group-hover:text-white/50 sm:h-14 sm:w-14"
-          strokeWidth={1.25}
-          aria-hidden
-        />
       </div>
       <div className="p-4">
         <h3 className="font-headline text-base font-bold leading-snug text-on-background">

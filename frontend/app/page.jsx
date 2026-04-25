@@ -22,10 +22,11 @@ export default function Home() {
   const [genre, setGenre] = useState("NEO-SYNTHWAVE");
   const [confidence, setConfidence] = useState(null);
   const [hintText, setHintText] = useState(DEFAULT_HINT);
-  const [busy, setBusy] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
+  const busy = isRecording || isUploading || isProcessing;
 
   const runPredict = useCallback(async (file) => {
     setError(null);
@@ -62,9 +63,9 @@ export default function Home() {
       return;
     }
 
-    setBusy(true);
     setError(null);
     setHintText(DEFAULT_HINT);
+    setIsRecording(true);
 
     try {
       const file = await recordMicAsWebmFile(RECORD_MS, setIsRecording);
@@ -77,23 +78,29 @@ export default function Home() {
       setError(msg);
       setHintText(`Error: ${msg}`);
     } finally {
-      setBusy(false);
+      setIsRecording(false);
     }
   }, [busy, runPredict]);
 
   const handleFileSelected = useCallback(
     async (file) => {
       if (busy) return;
-      setBusy(true);
       setError(null);
+      setIsUploading(true);
+      setIsProcessing(true);
+      setHintText("Uploading...");
 
-      const ok = await runPredict(file);
-      if (ok) {
-        setHintText(DEFAULT_HINT);
+      try {
+        const ok = await runPredict(file);
+        if (ok) {
+          setHintText(DEFAULT_HINT);
+        }
+      } finally {
+        setIsUploading(false);
+        setIsProcessing(false);
       }
-      setBusy(false);
     },
-    [busy, runPredict]
+    [busy, runPredict],
   );
 
   return (
@@ -126,87 +133,15 @@ export default function Home() {
               />
             </div>
             <div className="md:col-span-1">
-              <UploadCard disabled={busy} onFileSelected={handleFileSelected} />
+              <UploadCard
+                disabled={busy}
+                isUploading={isUploading}
+                isProcessing={isProcessing}
+                onFileSelected={handleFileSelected}
+              />
             </div>
           </div>
 
-          {/* Discovery */}
-          <div className="mx-auto w-full max-w-6xl">
-            <h3 className="mb-6 font-headline text-2xl font-black text-on-background md:mb-8 md:text-3xl lg:text-4xl">
-              Discovery Stream
-            </h3>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-              <div className="group rounded-xl border border-outline/20 bg-surface-container-low p-8 transition-all hover:border-accent/25 hover:bg-surface-container-high/80">
-                <div className="mb-4 aspect-square w-full overflow-hidden rounded-lg">
-                  <img
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    alt=""
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiCjhPpIZ-bQbC7M9gwz3qOfPDZ9dbRpzkDE33UxVnhlCqlAacicJfB_qq50Azv0pM35uTLbbJJL-wc2t6PwCItqJKeClhHYEBiGafXHV6QMW69MXelSaHvdaw-YDxuQclQqCCPNnsVONVCGVX47GzRVMnfIa7r-P0NO8DSlUjKeKEDfTMXqlypPtXi5NFQv79xfKVNmLvpKjeEMps3k1gHu8JPG3xrA0-bRoYoVIkaJiramZ7kTmEol5H1f8I_BwQZNp5iLlR7rw"
-                  />
-                </div>
-                <h4 className="font-headline text-lg font-bold text-on-background">
-                  Cyber-Jazz Fusion
-                </h4>
-                <p className="mb-4 text-sm text-on-surface-variant">
-                  Detected 2 hours ago • Urban Cafe
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-secondary/80 px-3 py-1 text-xs font-bold text-on-secondary">
-                    Experimental
-                  </span>
-                  <span className="rounded-full bg-secondary/80 px-3 py-1 text-xs font-bold text-on-secondary">
-                    High-Energy
-                  </span>
-                </div>
-              </div>
-              <div className="group rounded-xl border border-outline/20 bg-surface-container-low p-8 transition-all hover:border-accent/25 hover:bg-surface-container-high/80">
-                <div className="mb-4 aspect-square w-full overflow-hidden rounded-lg">
-                  <img
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    alt=""
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCip891YpBZDNdzO9_dTvyliN1m4-WjJ7b_9Xs-nuUauTMA99HcxOXYo4l-Guvz7Ckw9-dsXOEwJlbcUmh1h__L2z29jOHK9r4AnVBOl3gGEwnNnZGy9tZsSEXu5ZnhMNv9dhJVNdxQgzIPbu-d8aHxxXudRGQUDMccDH4UZalepJ0LJjB-hsHXKCoNgszbyAsavWaBFRbWf_udcjlp8GbTrAvjZjwN1dF6bMifkLiK6lxCvQ_Hr8daqLabAwmAsq7vxFZBIHUCYw"
-                  />
-                </div>
-                <h4 className="font-headline text-lg font-bold text-on-background">
-                  Industrial Techno
-                </h4>
-                <p className="mb-4 text-sm text-on-surface-variant">
-                  Detected 5 hours ago • Studio B
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-secondary/80 px-3 py-1 text-xs font-bold text-on-secondary">
-                    Electronic
-                  </span>
-                  <span className="rounded-full bg-secondary/80 px-3 py-1 text-xs font-bold text-on-secondary">
-                    Aggressive
-                  </span>
-                </div>
-              </div>
-              <div className="group rounded-xl border border-outline/20 bg-surface-container-low p-8 transition-all hover:border-accent/25 hover:bg-surface-container-high/80">
-                <div className="mb-4 aspect-square w-full overflow-hidden rounded-lg">
-                  <img
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    alt=""
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8iDDDLhMXNKn7nWA2Pp5-9U5qmjXQ0m7km_zlWphKUmkeZ869EtYZIEUcSlfYwQH6HEv3AGBClaKOsuO4CcYUvVEo4OyAJqxhBzcYmwUMivPgSI29tl_RSDX-zQdJVrAnPH8TmM8UDHsWcakwvLIfZaLO4yIwWC0TnUpXLAr54WBBYGqwOaaTMonlLDF5OVzKWSkCoq6ToEK87GWP2vKG2NQibkWDmR4RQpEvtlqFwp2NjGR1rwrroTmBK-E3lbbrT46j_YozI0k"
-                  />
-                </div>
-                <h4 className="font-headline text-lg font-bold text-on-background">
-                  Lo-Fi Dreamscape
-                </h4>
-                <p className="mb-4 text-sm text-on-surface-variant">
-                  Detected yesterday • Workspace
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-secondary/80 px-3 py-1 text-xs font-bold text-on-secondary">
-                    Chill
-                  </span>
-                  <span className="rounded-full bg-secondary/80 px-3 py-1 text-xs font-bold text-on-secondary">
-                    Ambient
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
         </main>
       </div>
 

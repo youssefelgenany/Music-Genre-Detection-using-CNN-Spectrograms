@@ -21,20 +21,7 @@ spectrograms to match batch-generated PNGs. Validation uses clean audio with no 
 
 import matplotlib
 
-# Interactive backend for end-of-run plots; TkAgg needs tkinter, Qt5Agg needs PyQt5/PySide.
-_mpl_backend_set = False
-for _mpl_backend in ("TkAgg", "Qt5Agg"):
-    try:
-        if _mpl_backend == "TkAgg":
-            import tkinter  # noqa: F401
-        matplotlib.use(_mpl_backend, force=True)
-        _mpl_backend_set = True
-        break
-    except Exception:
-        continue
-if not _mpl_backend_set:
-    matplotlib.use("Agg", force=True)
-
+matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 
 import io
@@ -46,6 +33,7 @@ import librosa
 import librosa.display
 import numpy as np
 from PIL import Image
+from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -588,6 +576,28 @@ def evaluate(
     return val_loss, val_acc
 
 
+def collect_val_labels(
+    model: nn.Module,
+    dataloader: DataLoader,
+    device: torch.device,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Run a full validation pass in eval mode and return per-sample true and predicted
+    class indices (same order as batches).
+    """
+    model.eval()
+    y_true: List[int] = []
+    y_pred: List[int] = []
+    with torch.no_grad():
+        for inputs, targets in dataloader:
+            inputs = inputs.to(device)
+            outputs = model(inputs)
+            _, predicted = torch.max(outputs, dim=1)
+            y_true.extend([int(t) for t in targets.cpu().numpy().ravel()])
+            y_pred.extend([int(p) for p in predicted.cpu().numpy().ravel()])
+    return np.array(y_true), np.array(y_pred)
+
+
 # -----------------------------
 # Main training script
 # -----------------------------
@@ -686,6 +696,17 @@ def main() -> None:
     print(f"\nFinal validation loss: {final_val_loss:.4f}")
     print(f"Final validation accuracy: {final_val_acc:.4f}")
 
+    y_true, y_pred = collect_val_labels(model, val_loader, device)
+    cm = confusion_matrix(y_true, y_pred)
+    fig_cm, ax_cm = plt.subplots(figsize=(10, 10))
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names)
+    disp.plot(cmap="Blues", ax=ax_cm, xticks_rotation=45.0)
+    fig_cm.tight_layout()
+    fig_cm.savefig("confusion_matrix.png", dpi=150, bbox_inches="tight")
+    print("Confusion matrix saved to: confusion_matrix.png")
+    plt.show(block=True)
+    plt.close(fig_cm)
+
     # -----------------------------
     # Plot training curves
     # -----------------------------
@@ -705,13 +726,12 @@ def main() -> None:
     axes[1].set_title("Accuracy")
     axes[1].legend()
 
-    fig.tight_layout()
     os.makedirs("models", exist_ok=True)
-    curve_path = os.path.join("models", "training_curves.png")
-    fig.savefig(curve_path, dpi=150, bbox_inches="tight")
-    print(f"Training curves saved to: {curve_path}")
+    plt.tight_layout()
+    plt.savefig("training_curves.png", dpi=150, bbox_inches="tight")
+    print("Training curves saved to: training_curves.png")
+    plt.show(block=True)
     plt.close(fig)
-    plt.show()
 
     # -----------------------------
     # Save the trained model

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { ArrowLeft } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
@@ -17,6 +17,15 @@ export default function MixtapePlaylistView({ genre }) {
   const playlist = useMemo(() => getMixtapePlaylistByGenre(genre), [genre]);
   const songs = playlist?.songs ?? [];
   const defaultCover = defaultCoverForGenre(genre);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production") {
+      console.log(
+        "[MixtapePlaylistView] song.cover values:",
+        songs.map((song) => ({ id: song.id, cover: song.cover })),
+      );
+    }
+  }, [songs]);
 
   const playable = useMemo(
     () => songs.filter((s) => String(s.audioUrl ?? "").trim()),
@@ -65,9 +74,13 @@ export default function MixtapePlaylistView({ genre }) {
             </Link>
 
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-8">
-              <div
-                className={`mx-auto h-40 w-40 shrink-0 rounded-lg bg-gradient-to-br shadow-2xl sm:mx-0 sm:h-48 sm:w-48 ${defaultCover}`}
-                aria-hidden
+              <img
+                src={playlist?.cover || "/covers/default.jpg"}
+                alt={playlist?.genre || genre}
+                className="mx-auto h-[200px] w-[200px] shrink-0 rounded-2xl object-cover shadow-2xl sm:mx-0 sm:h-[240px] sm:w-[240px]"
+                onError={(e) => {
+                  e.currentTarget.src = "/covers/default.jpg";
+                }}
               />
               <div className="min-w-0 flex-1 text-center sm:pb-2 sm:text-left">
                 <p className="mb-1 text-xs font-bold uppercase tracking-widest text-on-surface-variant">
@@ -106,6 +119,7 @@ export default function MixtapePlaylistView({ genre }) {
                       trackId={s.id}
                       index={i}
                       audioUrl={s.audioUrl}
+                      coverImageSrc={s.cover}
                       coverGradientClass={cover}
                       songTitle={s.title}
                       songArtist={s.artist}
