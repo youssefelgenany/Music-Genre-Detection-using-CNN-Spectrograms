@@ -19,8 +19,9 @@ const DEFAULT_HINT =
 const RECORD_MS = 10000;
 
 export default function Home() {
-  const [genre, setGenre] = useState("NEO-SYNTHWAVE");
+  const [genre, setGenre] = useState(null);
   const [confidence, setConfidence] = useState(null);
+  const [topPredictions, setTopPredictions] = useState([]);
   const [hintText, setHintText] = useState(DEFAULT_HINT);
   const [isRecording, setIsRecording] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -35,9 +36,14 @@ export default function Home() {
 
     try {
       const data = await postPredictAudio(file);
-      const { genre: g, confidence: c } = parsePredictResponse(data);
+      const {
+        genre: g,
+        confidence: c,
+        topPredictions: top,
+      } = parsePredictResponse(data);
       setGenre(g || "—");
       setConfidence(c);
+      setTopPredictions(top);
       try {
         const canonical = normalizeToLibraryGenreOrFallback(g);
         await saveScannedTrack(file, canonical);
@@ -47,6 +53,9 @@ export default function Home() {
       return true;
     } catch (err) {
       const msg = err && err.message ? err.message : String(err);
+      setGenre(null);
+      setConfidence(null);
+      setTopPredictions([]);
       setError(msg);
       setHintText(`Error: ${msg}`);
       return false;
@@ -64,6 +73,9 @@ export default function Home() {
     }
 
     setError(null);
+    setGenre(null);
+    setConfidence(null);
+    setTopPredictions([]);
     setHintText(DEFAULT_HINT);
     setIsRecording(true);
 
@@ -86,6 +98,9 @@ export default function Home() {
     async (file) => {
       if (busy) return;
       setError(null);
+      setGenre(null);
+      setConfidence(null);
+      setTopPredictions([]);
       setIsUploading(true);
       setIsProcessing(true);
       setHintText("Uploading...");
@@ -116,6 +131,7 @@ export default function Home() {
             <ResultDisplay
               genre={genre}
               confidence={confidence}
+              topPredictions={topPredictions}
               isProcessing={isProcessing}
               error={error}
             />

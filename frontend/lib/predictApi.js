@@ -68,9 +68,28 @@ export function confidenceFromJson(data) {
   return null;
 }
 
+function topPredictionsFromJson(data) {
+  if (!data || typeof data !== "object") return [];
+  const rows = Array.isArray(data.top_predictions) ? data.top_predictions : [];
+  return rows
+    .map((row) => {
+      const genre = row && row.genre != null ? String(row.genre) : "";
+      const confidence = row?.confidence;
+      if (!genre) return null;
+      if (typeof confidence !== "number" || !Number.isFinite(confidence)) return null;
+      return {
+        genre,
+        confidence: Math.min(1, Math.max(0, confidence)),
+      };
+    })
+    .filter(Boolean)
+    .slice(0, 3);
+}
+
 export function parsePredictResponse(data) {
   return {
     genre: genreFromJson(data),
     confidence: confidenceFromJson(data),
+    topPredictions: topPredictionsFromJson(data),
   };
 }
