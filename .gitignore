@@ -3,7 +3,6 @@ venv/
 venv64/
 node_modules/
 *.wav
-*.mp3
 *.npy
 *.pt
 *.h5
