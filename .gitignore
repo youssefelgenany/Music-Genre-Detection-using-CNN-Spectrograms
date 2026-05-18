@@ -1,11 +1,7 @@
 venv/
 .venv/
 venv64/
-node_modules/
 *.wav
-*.npy
-*.pt
-*.h5
 __pycache__/
 dataset/
 spectrograms/
