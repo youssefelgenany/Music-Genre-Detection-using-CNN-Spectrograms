@@ -12,7 +12,7 @@
 
 ## Project Overview
 
-**Gen Scope** is a full-stack web application that listens to music—via upload or live recording—and predicts its genre using a convolutional neural network trained on Mel spectrograms. The backend exposes a FastAPI inference API backed by a fine-tuned **ResNet18** checkpoint; the frontend is a **Next.js** app with a Spotify-inspired library, scanned-track playlists, genre mixtapes, and an integrated music player.
+**Gen Scope** is a full-stack web application that listens to music—via upload or live recording—and predicts its genre using a convolutional neural network trained on Mel spectrograms. The backend exposes a FastAPI inference API backed by a fine-tuned **ResNet18** checkpoint; the frontend is a **Next.js** app with a Music library, scanned-track playlists, genre mixtapes, and an integrated music player.
 
 The system converts audio into a **128-band Mel spectrogram** (10-second centered segment, 22.05 kHz), renders it as a clean RGB image (224×224), and classifies it into one of **10 GTZAN genres**: blues, classical, country, disco, hiphop, jazz, metal, pop, reggae, and rock.
 
@@ -108,7 +108,7 @@ The codebase follows consistent conventions across Python and JavaScript:
 > Add screenshots after capturing the running app (`npm run dev` + `uvicorn app:app`).
 
 ### Home Page — Genre Detection
-![Home Page — Add screenshot here](docs/screenshots/home.png)
+![Home Page — Add screenshot here](C:\Users\Youssef Khaled\Documents\GitHub\Music-Genre-Detection-using-CNN-Spectrograms\docs\screenshots\home.png)
 
 ### Home Page — Top Predictions & Confidence
 ![Top predictions — Add screenshot here](docs/screenshots/home-results.png)
@@ -580,36 +580,6 @@ Contributions are welcome. High-impact areas:
 - **[Next.js](https://nextjs.org/docs)** — React application framework
 - **[Tailwind CSS](https://tailwindcss.com/docs)** — styling system
 - UI inspiration from modern music streaming applications (library grids, mixtapes, persistent player bar)
-
----
-
-## License
-
-This project is licensed under the **MIT License**.
-
-```
-MIT License
-
-Copyright (c) 2024 Gen Scope Contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
 
 ---
 
