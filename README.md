@@ -122,9 +122,6 @@ The codebase follows consistent conventions across Python and JavaScript:
 ### Mixtape Page
 ![Mixtape Page — Add screenshot here](docs/screenshots/mixtape.png)
 
-### Made For You Playlist
-![Made For You — Add screenshot here](docs/screenshots/made-for-you.png)
-
 ### Music Player Bar
 ![Music player — Add screenshot here](docs/screenshots/player.png)
 
