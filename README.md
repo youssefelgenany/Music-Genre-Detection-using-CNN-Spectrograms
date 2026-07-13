@@ -105,10 +105,9 @@ The codebase follows consistent conventions across Python and JavaScript:
 
 ## Screenshots
 
-> Add screenshots after capturing the running app (`npm run dev` + `uvicorn app:app`).
 
 ### Home Page — Genre Detection
-![Home Page — Add screenshot here](C:\Users\Youssef Khaled\Documents\GitHub\Music-Genre-Detection-using-CNN-Spectrograms\docs\screenshots\home.png)
+![Home Page — Add screenshot here](docs\screenshots\home.png)
 
 ### Home Page — Top Predictions & Confidence
 ![Top predictions — Add screenshot here](docs/screenshots/home-results.png)
@@ -122,6 +121,10 @@ The codebase follows consistent conventions across Python and JavaScript:
 ### Mixtape Page
 ![Mixtape Page — Add screenshot here](docs/screenshots/mixtape.png)
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 ### Music Player Bar
 ![Music player — Add screenshot here](docs/screenshots/player.png)
 

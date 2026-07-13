@@ -7,6 +7,9 @@ Uses the same song-level validation split and preprocessing as `train_model.py`
 Usage:
     python generate_confusion_matrix.py
 
+Writes `classification_report.txt` (override with ``--report``) and
+``confusion_matrix.png`` (override with ``--out``).
+
 Requires:
     - `models/music_genre_cnn.pth` (or pass --checkpoint)
     - `spectrograms_10s/` (or the same `DATA_DIR` as training) on disk
@@ -26,11 +29,16 @@ from train_model import DATA_DIR, collect_val_labels, get_dataloaders
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
-from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
+from sklearn.metrics import (
+    ConfusionMatrixDisplay,
+    classification_report,
+    confusion_matrix,
+)
 from torchvision import models
 
 DEFAULT_CHECKPOINT = os.path.join("models", "music_genre_cnn.pth")
 DEFAULT_OUT = "confusion_matrix.png"
+DEFAULT_REPORT = "classification_report.txt"
 
 
 def _load_checkpoint(path: str, device: torch.device) -> dict:
@@ -79,6 +87,12 @@ def main() -> None:
         default=DEFAULT_OUT,
         help="Output path for the confusion matrix image",
     )
+    parser.add_argument(
+        "--report",
+        type=str,
+        default=DEFAULT_REPORT,
+        help="Output path for the classification report text file",
+    )
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -101,6 +115,17 @@ def main() -> None:
             f"Checkpoint: {class_names_ck!r}. Use the same spectrogram root as training."
         )
     y_true, y_pred = collect_val_labels(model, val_loader, device)
+
+    report = classification_report(
+        y_true,
+        y_pred,
+        target_names=class_names_ck,
+        digits=4,
+    )
+    print(report)
+    with open(args.report, "w", encoding="utf-8") as f:
+        f.write(report)
+    print(f"Saved: {os.path.abspath(args.report)}")
 
     cm = confusion_matrix(y_true, y_pred)
     fig, ax = plt.subplots(figsize=(10, 10))

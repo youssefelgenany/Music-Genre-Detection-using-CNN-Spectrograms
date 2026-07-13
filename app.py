@@ -1,5 +1,6 @@
 import os
 import tempfile
+import time
 
 os.environ["PATH"] += r";C:\Users\Youssef Khaled\Downloads\ffmpeg-8.1-essentials_build\ffmpeg-8.1-essentials_build\bin"
 
@@ -17,6 +18,37 @@ from audio_pipeline import SAMPLE_RATE, process_audio_file
 
 
 MODEL_PATH = "models/music_genre_cnn.pth"
+
+
+def model_memory_stats(m: nn.Module) -> tuple[int, float]:
+    """Parameter count and approximate weight+buffer memory in MB."""
+    param_count = sum(p.numel() for p in m.parameters())
+    bytes_used = sum(p.numel() * p.element_size() for p in m.parameters())
+    bytes_used += sum(b.numel() * b.element_size() for b in m.buffers())
+    return param_count, bytes_used / (1024 * 1024)
+
+
+def log_prediction_performance(
+    *,
+    inference_ms: float | None,
+    api_ms: float,
+    param_count: int,
+    memory_mb: float,
+) -> None:
+    inference_str = (
+        f"{inference_ms:.2f} ms"
+        if inference_ms is not None
+        else "n/a (forward pass did not run)"
+    )
+    print(
+        "[Gen Scope performance]\n"
+        f"  Inference latency (forward pass): {inference_str}\n"
+        f"  API response time (/predict):       {api_ms:.2f} ms\n"
+        f"  Model parameters:                 {param_count:,}\n"
+        f"  Approx. model memory:             {memory_mb:.2f} MB"
+    )
+
+
 def load_model_and_classes(checkpoint_path: str = MODEL_PATH):
     checkpoint = torch.load(checkpoint_path, map_location="cpu")
     class_names = checkpoint["class_names"]
@@ -83,6 +115,7 @@ if os.path.isdir(_static_dir):
     app.mount("/static", StaticFiles(directory=_static_dir), name="static")
 
 model, class_names = load_model_and_classes(MODEL_PATH)
+MODEL_PARAM_COUNT, MODEL_MEMORY_MB = model_memory_stats(model)
 image_transform = transforms.Compose([transforms.ToTensor()])
 
 
@@ -95,6 +128,9 @@ async def root():
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
+    api_start = time.perf_counter()
+    inference_ms: float | None = None
+
     original_name = (file.filename or "").lower()
     content_type = (file.content_type or "").lower()
     is_wav_ext = original_name.endswith(".wav")
@@ -124,7 +160,10 @@ async def predict(file: UploadFile = File(...)):
         input_tensor = image_transform(image).unsqueeze(0).to("cpu")
 
         with torch.no_grad():
+            forward_start = time.perf_counter()
             logits = model(input_tensor)
+            inference_ms = (time.perf_counter() - forward_start) * 1000
+
             probs = torch.softmax(logits, dim=1)[0]
             pred_idx = int(torch.argmax(logits, dim=1).item())
             confidence = float(probs[pred_idx].item())
@@ -150,6 +189,13 @@ async def predict(file: UploadFile = File(...)):
         detail = f"{type(exc).__name__}: {exc}"
         raise HTTPException(status_code=400, detail=detail) from exc
     finally:
+        api_ms = (time.perf_counter() - api_start) * 1000
+        log_prediction_performance(
+            inference_ms=inference_ms,
+            api_ms=api_ms,
+            param_count=MODEL_PARAM_COUNT,
+            memory_mb=MODEL_MEMORY_MB,
+        )
         if os.path.exists(tmp_audio_path):
             os.remove(tmp_audio_path)
         if converted_wav_path and os.path.exists(converted_wav_path):
