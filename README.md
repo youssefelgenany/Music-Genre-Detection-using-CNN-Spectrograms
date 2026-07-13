@@ -107,7 +107,7 @@ The codebase follows consistent conventions across Python and JavaScript:
 
 
 ### Home Page — Genre Detection
-![Home Page — Add screenshot here](docs\screenshots\home.png)
+![Home Page — Add screenshot here](docs/screenshots/home.png)
 
 ### Home Page — Top Predictions & Confidence
 ![Top predictions — Add screenshot here](docs/screenshots/home-results.png)
