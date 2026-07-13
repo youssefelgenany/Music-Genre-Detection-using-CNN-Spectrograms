@@ -121,10 +121,6 @@ The codebase follows consistent conventions across Python and JavaScript:
 ### Mixtape Page
 ![Mixtape Page — Add screenshot here](docs/screenshots/mixtape.png)
 
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 ### Music Player Bar
 ![Music player — Add screenshot here](docs/screenshots/player.png)
 
